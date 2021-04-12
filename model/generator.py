@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from utils.utils import weights_init
+from .utils.utils import weights_init
 from .res_stack import ResStack
 # from res_stack import ResStack
 
