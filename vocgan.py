@@ -42,7 +42,7 @@ class VocGan:
 
             audio = audio.squeeze(0)  # collapse all dimension except time axis
             if self.denoise:
-                denoiser = Denoiser(model).cuda()
+                denoiser = Denoiser(self.model).cuda()
                 audio = denoiser(audio, 0.01)
             audio = audio.squeeze()
             audio = audio[:-(self.hp.audio.hop_length*10)]
