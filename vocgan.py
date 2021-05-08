@@ -19,8 +19,10 @@ class VocGan:
     def __init__(self, config=None, denoise=False):
         checkpoint_dir = './checkpoints'
         os.makedirs(checkpoint_dir,exist_ok=True)
-        checkpoint_path = download_url(url,checkpoint_dir)
-            
+        checkpoint_path = './checkpoints/vctk_pretrained_model_3180.pt'
+        if not os.path.exists(checkpoint_path):
+            download_url(url,checkpoint_dir)
+         
         checkpoint = torch.load(checkpoint_path)
         if config is not None:
             hp = HParam(config)
