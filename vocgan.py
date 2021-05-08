@@ -13,11 +13,14 @@ from .model.generator import ModifiedGenerator
 from .utils.hparams import HParam, load_hparam_str
 
 MAX_WAV_VALUE = 32768.0
-
-
+from .download_utils import download_url
+url = 'https://zenodo.org/record/4743731/files/vctk_pretrained_model_3180.pt'
 class VocGan:
-    def __init__(self, checkpoint_path, config=None, denoise=False):
-
+    def __init__(self, config=None, denoise=False):
+        checkpoint_dir = './checkpoints'
+        os.makedirs(checkpoint_dir,exist_ok=True)
+        checkpoint_path = download_url(url,checkpoint_dir)
+            
         checkpoint = torch.load(checkpoint_path)
         if config is not None:
             hp = HParam(config)
