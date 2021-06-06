@@ -43,8 +43,9 @@ from librosa.filters import mel as librosa_mel_fn
 class STFT(torch.nn.Module):
     """adapted from Prem Seetharaman's https://github.com/pseeth/pytorch-stft"""
     def __init__(self, filter_length=800, hop_length=200, win_length=800,
-                 window='hann'):
+                 window='hann',device='cuda:0'):
         super(STFT, self).__init__()
+        import pdb;pdb.set_trace()
         self.filter_length = filter_length
         self.hop_length = hop_length
         self.win_length = win_length
@@ -75,6 +76,8 @@ class STFT(torch.nn.Module):
         self.register_buffer('forward_basis', forward_basis.float())
         self.register_buffer('inverse_basis', inverse_basis.float())
 
+        self.device = device
+
     def transform(self, input_data):
         num_batches = input_data.size(0)
         num_samples = input_data.size(1)
@@ -91,8 +94,8 @@ class STFT(torch.nn.Module):
 
         # https://github.com/NVIDIA/tacotron2/issues/125
         forward_transform = F.conv1d(
-            input_data.cuda(),
-            Variable(self.forward_basis, requires_grad=False).cuda(),
+            input_data.to(self.device),
+            Variable(self.forward_basis, requires_grad=False).to(self.device),
             stride=self.hop_length,
             padding=0).cpu()
 
@@ -126,7 +129,7 @@ class STFT(torch.nn.Module):
                 np.where(window_sum > tiny(window_sum))[0])
             window_sum = torch.autograd.Variable(
                 torch.from_numpy(window_sum), requires_grad=False)
-            window_sum = window_sum.cuda() if magnitude.is_cuda else window_sum
+            window_sum = window_sum.to(self.device) if magnitude.is_cuda else window_sum
             inverse_transform[:, :, approx_nonzero_indices] /= window_sum[approx_nonzero_indices]
 
             # scale by hop ratio
