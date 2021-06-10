@@ -28,6 +28,7 @@ class Denoiser(torch.nn.Module):
 
         self.register_buffer('bias_spec', bias_spec[:, :, 0][:, :, None])
         self.device = device
+        self.to(device)
 
     def forward(self, audio, strength=0.1):
         audio_spec, audio_angles = self.stft.transform(audio.to(self.device).float())

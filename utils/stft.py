@@ -45,7 +45,7 @@ class STFT(torch.nn.Module):
     def __init__(self, filter_length=800, hop_length=200, win_length=800,
                  window='hann',device='cuda:0'):
         super(STFT, self).__init__()
-        import pdb;pdb.set_trace()
+        
         self.filter_length = filter_length
         self.hop_length = hop_length
         self.win_length = win_length

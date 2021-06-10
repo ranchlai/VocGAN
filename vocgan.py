@@ -53,13 +53,14 @@ class VocGan:
 
             audio = audio.squeeze(0)  # collapse all dimension except time axis
             if self.denoise:
-                denoiser = Denoiser(self.model).to(self.device)
+                denoiser = Denoiser(self.model,device=self.device)
+                #.to(self.device)
                 audio = denoiser(audio, 0.01)
             audio = audio.squeeze()
             audio = audio[:-(self.hp.audio.hop_length * 10)]
-            audio = MAX_WAV_VALUE * audio
-            audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE - 1)
-            audio = audio.short()
+            #audio = MAX_WAV_VALUE * audio
+            #audio = audio.clamp(min=-MAX_WAV_VALUE, max=MAX_WAV_VALUE - 1)
+            #audio = audio.short()
             audio = audio.cpu().detach().numpy()
 
         return audio
