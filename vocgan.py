@@ -12,29 +12,22 @@ from .model.generator import ModifiedGenerator
 from .utils.hparams import HParam, load_hparam_str
 
 MAX_WAV_VALUE = 32768.0
-from .download_utils import download_url
-url = 'https://zenodo.org/record/4743731/files/vctk_pretrained_model_3180.pt'
 class VocGan:
-    def __init__(self, device='cuda:0',config=None, denoise=False):
-        home = os.environ['HOME']
-        checkpoint_path = os.path.join(home,'./.cache/vocgan')
-        os.makedirs(checkpoint_path,exist_ok=True)
-        checkpoint_file = os.path.join(checkpoint_path,'vctk_pretrained_model_3180.pt')
-        if not os.path.exists(checkpoint_file):
-            download_url(url,checkpoint_path)
-         
-        checkpoint = torch.load(checkpoint_file,map_location=device)
+    def __init__(self, checkpoint, device='cuda:0',config=None, denoise=False):
+             
+        checkpoint = os.path.expanduser(checkpoint)
+        ckpt = torch.load(checkpoint,map_location=device)
         if config is not None:
             hp = HParam(config)
         else:
-            hp = load_hparam_str(checkpoint['hp_str'])
+            hp = load_hparam_str(ckpt['hp_str'])
         self.hp = hp
         self.model = ModifiedGenerator(hp.audio.n_mel_channels,
                                        hp.model.n_residual_layers,
                                        ratios=hp.model.generator_ratio,
                                        mult=hp.model.mult,
                                        out_band=hp.model.out_channels).to(device)
-        self.model.load_state_dict(checkpoint['model_g'])
+        self.model.load_state_dict(ckpt['model_g'])
         self.model.eval(inference=True)
         self.model = self.model.to(device)
         self.denoise = denoise
